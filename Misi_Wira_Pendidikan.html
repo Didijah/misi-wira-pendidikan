@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misi Wira Pendidikan</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:linear-gradient(135deg,#fff4fb,#eef7ff);color:#24324a}
+.container{max-width:900px;margin:auto;padding:22px}
+.card{background:#fff;border-radius:24px;padding:24px;box-shadow:0 10px 35px #536b8b22;margin:18px 0}
+h1{margin:0 0 8px;font-size:32px}h2{margin-top:0}.sub{color:#667085}.hero{background:linear-gradient(135deg,#7c5cff,#5db9ff);color:#fff}.hero .sub{color:#eef5ff}
+button{border:0;border-radius:14px;padding:13px 18px;font-size:15px;font-weight:700;cursor:pointer;background:#7c5cff;color:white;margin:6px}
+button.secondary{background:#edf1f7;color:#344054}.hidden{display:none}.progress{height:12px;background:#e9edf5;border-radius:20px;overflow:hidden}.bar{height:100%;background:#7c5cff;width:0%;transition:.3s}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.mission{padding:18px;border:2px solid #e7eaf0;border-radius:18px;cursor:pointer;background:#fff}.mission:hover{border-color:#7c5cff;transform:translateY(-2px)}.mission b{display:block;margin-bottom:6px}
+.option{display:block;width:100%;text-align:left;background:#f7f8fb;color:#24324a;border:2px solid #e8ebf1;margin:10px 0}.option:hover{border-color:#7c5cff}.correct{background:#e9f8ef!important;border-color:#39a96b!important}.wrong{background:#fff0f0!important;border-color:#e05a5a!important}
+.badge{display:inline-block;background:#fff1a8;padding:7px 12px;border-radius:999px;font-weight:800;margin:4px}.small{font-size:13px;color:#667085}.score{font-size:28px;font-weight:900}.center{text-align:center}
+#feedback{min-height:28px;font-weight:700}.tag{display:inline-block;background:#eef0ff;color:#5a45cc;border-radius:999px;padding:6px 10px;margin:3px;font-size:13px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="container">
+<section id="home" class="card hero">
+<h1>🎓 Misi Wira Pendidikan</h1>
+<p class="sub">Permainan sambil belajar: jelajah evolusi perancangan pembangunan pendidikan Malaysia.</p>
+<p>Lengkapkan misi, jawab soalan dan kumpul lencana untuk menjadi <b>Wira Pendidikan</b>!</p>
+<button onclick="startGame()">🚀 Mula Misi</button>
+</section>
+
+<section id="game" class="hidden">
+<div class="card">
+<div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><div><b id="missionTitle">Misi</b><div class="small" id="missionNum"></div></div><div class="score">⭐ <span id="score">0</span></div></div>
+<div class="progress"><div class="bar" id="bar"></div></div>
+</div>
+<div id="stage" class="card"></div>
+</section>
+
+<section id="result" class="hidden card center">
+<h2>🏆 Misi Selesai!</h2><p class="score">⭐ <span id="finalScore">0</span></p>
+<p id="resultText"></p><div id="badges"></div>
+<button onclick="startGame()">🔄 Main Semula</button>
+<button class="secondary" onclick="showHome()">🏠 Menu Utama</button>
+</section>
+</div>
+
+<script>
+const missions=[
+{title:"Misi 1 — Jejak Masa",type:"quiz",q:"Apakah fungsi utama perancangan pembangunan pendidikan?",opts:["Menyusun keutamaan, sumber dan strategi pendidikan mengikut keperluan pembangunan negara","Menentukan harga buku teks sahaja","Menggantikan semua peranan guru","Mengurangkan peluang pendidikan"],ans:0,ex:"Perancangan pendidikan menyusun keutamaan, sumber dan strategi berdasarkan keperluan pembangunan negara."},
+{title:"Misi 2 — Rancangan Malaysia",type:"quiz",q:"Dalam fasa awal, pendidikan banyak menekankan dua perkara utama iaitu…",opts:["Perpaduan nasional dan penyediaan tenaga kerja","AI dan pembelajaran digital","TVET dan sekolah swasta","Peperiksaan dan kokurikulum"],ans:0,ex:"Fasa awal memberi keutamaan kepada pembinaan perpaduan nasional dan penyediaan tenaga kerja."},
+{title:"Misi 3 — Enam Teras PIPP",type:"match",items:[
+["Membina Negara Bangsa","Identiti, perpaduan dan pembinaan negara bangsa"],
+["Membangun Modal Insan","Ilmu, kemahiran, nilai dan keupayaan menyumbang"],
+["Memperkasakan SK","Sekolah kebangsaan sebagai pilihan dan wadah perpaduan"],
+["Merapatkan Jurang","Lokasi, kemudahan, peluang dan pencapaian"],
+["Memartabatkan Keguruan","Kualiti dan profesionalisme guru"],
+["Melonjak Kecemerlangan","Prestasi sekolah, guru dan murid ke tahap lebih tinggi"]]},
+{title:"Misi 4 — Kuasa PPPM",type:"quiz",q:"Yang manakah merupakan lima aspirasi sistem PPPM?",opts:["Akses, Kualiti, Ekuiti, Perpaduan, Kecekapan","Ilmu, TVET, AI, Digital, Sukan","Guru, Murid, Ibu Bapa, JPN, PPD","Amanah, Kreativiti, Disiplin, Bahasa, Budaya"],ans:0,ex:"Lima aspirasi sistem ialah Akses, Kualiti, Ekuiti, Perpaduan dan Kecekapan."},
+{title:"Misi 5 — Enam Aspirasi Murid",type:"quiz",q:"Antara berikut, yang manakah BUKAN aspirasi murid PPPM?",opts:["Pengetahuan","Kemahiran Berfikir","Kepimpinan","Kekayaan"],ans:3,ex:"Enam aspirasi murid ialah Pengetahuan, Kemahiran Berfikir, Kepimpinan, Dwibahasa, Etika & Kerohanian dan Identiti Nasional."},
+{title:"Misi 6 — Tiga Gelombang",type:"timeline",items:[
+["Gelombang 1","2013–2015","Mengukuhkan asas"],
+["Gelombang 2","2016–2020","Memacu peningkatan sistem"],
+["Gelombang 3","2021–2025","Ke arah kecemerlangan"]]},
+{title:"Misi 7 — Era RPM",type:"quiz",q:"Apakah tema RPM 2026–2035?",opts:["Merapatkan Jurang, Meningkatkan Mutu, Meraih Kejayaan Bersama","Pendidikan untuk Semua, Semua untuk Pendidikan","Sekolah Digital, Guru Digital, Murid Digital","Membina Negara Bangsa melalui TVET"],ans:0,ex:"Tema RPM ialah Merapatkan Jurang, Meningkatkan Mutu, Meraih Kejayaan Bersama."},
+{title:"Misi 8 — Ciri Wira Masa Depan",type:"quiz",q:"Antara berikut, yang manakah lima ciri murid RPM 2026–2035?",opts:["Beradab, Berilmu, Berkemahiran, Berdaya Tahan, Berkeyakinan","Bijak, Kaya, Popular, Berani, Kreatif","Akses, Kualiti, Ekuiti, Perpaduan, Kecekapan","Guru, Murid, Sekolah, Keluarga, Negara"],ans:0,ex:"Lima ciri murid RPM ialah Beradab, Berilmu, Berkemahiran, Berdaya Tahan dan Berkeyakinan."},
+{title:"Misi Akhir — Sambung Rantaian",type:"quiz",q:"Apakah kesinambungan paling jelas antara PIPP, PPPM dan RPM?",opts:["Pembangunan insan, akses dan keadilan pendidikan, serta kualiti guru dan pembelajaran","Semua pelan mempunyai jumlah teras yang sama","Semua pelan hanya berfokus pada teknologi","Tiada kesinambungan antara pelan"],ans:0,ex:"Walaupun fokus berubah mengikut zaman, pembangunan insan, akses, keadilan dan kualiti pendidikan terus menjadi kesinambungan utama."}
+];
+
+let i=0,score=0,matchState={};
+function startGame(){i=0;score=0;document.getElementById("home").classList.add("hidden");document.getElementById("result").classList.add("hidden");document.getElementById("game").classList.remove("hidden");render()}
+function showHome(){document.getElementById("result").classList.add("hidden");document.getElementById("game").classList.add("hidden");document.getElementById("home").classList.remove("hidden")}
+function render(){
+const m=missions[i];document.getElementById("missionTitle").textContent=m.title;document.getElementById("missionNum").textContent=`Misi ${i+1} daripada ${missions.length}`;document.getElementById("score").textContent=score;document.getElementById("bar").style.width=((i)/missions.length*100)+"%";
+let s="";
+if(m.type==="quiz"){s=`<h2>${m.q}</h2><div>${m.opts.map((x,k)=>`<button class="option" onclick="answer(${k})">${String.fromCharCode(65+k)}. ${x}</button>`).join("")}</div><div id="feedback"></div>`}
+if(m.type==="match"){s=`<h2>Padankan teras PIPP dengan maksudnya.</h2><p class="small">Pilih satu teras, kemudian pilih maksud yang betul.</p><div id="matchArea"></div><div id="feedback"></div>`}
+if(m.type==="timeline"){s=`<h2>Susun gelombang PPPM mengikut urutan masa.</h2><p class="small">Klik mengikut urutan: pertama → kedua → ketiga.</p><div class="grid" id="timelineArea">${m.items.map((x,k)=>`<button class="mission" onclick="pickTimeline(${k})"><b>${x[0]}</b><span>${x[1]}</span></button>`).join("")}</div><div id="feedback"></div>`}
+document.getElementById("stage").innerHTML=s;if(m.type==="match")setupMatch();if(m.type==="timeline")window.tpick=[];
+}
+function answer(k){const m=missions[i],btns=document.querySelectorAll(".option");btns.forEach(b=>b.disabled=true);if(k===m.ans){score+=10;btns[k].classList.add("correct");feedback("Betul! +10 mata. "+m.ex,true)}else{btns[k].classList.add("wrong");btns[m.ans].classList.add("correct");feedback("Belum tepat. "+m.ex,false)}setTimeout(next,1300)}
+function feedback(t,good){document.getElementById("feedback").textContent=(good?"✅ ":"💡 ")+t}
+function next(){i++;if(i>=missions.length)finish();else render()}
+function setupMatch(){
+const m=missions[i];matchState={selected:null,done:0};const area=document.getElementById("matchArea");
+area.innerHTML=`<div id="terms" class="grid">${m.items.map((x,k)=>`<button class="mission" onclick="selectTerm(${k})"><b>${x[0]}</b></button>`).join("")}</div><hr><div id="defs" class="grid">${m.items.map((x,k)=>`<button class="mission" id="def${k}" onclick="selectDef(${k})">${x[1]}</button>`).join("")}</div>`}
+function selectTerm(k){matchState.selected=k;document.querySelectorAll("#terms .mission").forEach((b,n)=>b.style.outline=n===k?"3px solid #7c5cff":"none")}
+function selectDef(k){if(matchState.selected===null)return;let t=matchState.selected;if(t===k){document.querySelectorAll("#terms .mission")[t].disabled=true;document.getElementById("def"+k).disabled=true;document.getElementById("def"+k).classList.add("correct");score+=10;matchState.done++;matchState.selected=null;if(matchState.done===missions[i].items.length){feedback("🎉 Semua padanan betul! +"+(missions[i].items.length*10)+" mata",true);setTimeout(next,1000)}}else{document.getElementById("def"+k).classList.add("wrong");setTimeout(()=>document.getElementById("def"+k).classList.remove("wrong"),500)}}
+function pickTimeline(k){const expected=window.tpick.length;if(k===expected){window.tpick.push(k);document.querySelectorAll("#timelineArea button")[k].disabled=true;document.querySelectorAll("#timelineArea button")[k].classList.add("correct");if(window.tpick.length===3){score+=30;feedback("🎉 Urutan tepat! +30 mata",true);setTimeout(next,1000)}}else feedback("Cuba fikir semula berdasarkan tahun 2013–2025.",false)}
+function finish(){document.getElementById("game").classList.add("hidden");document.getElementById("result").classList.remove("hidden");document.getElementById("finalScore").textContent=score;let rank=score>=120?"Wira Pendidikan Legenda 🏆":score>=90?"Wira Pendidikan Hebat 🌟":"Wira Pendidikan Muda 🌱";document.getElementById("resultText").innerHTML=`Tahniah! Anda mencapai gelaran <b>${rank}</b>.<br>Skor maksimum ialah ${missions.length*10+30} mata.`;document.getElementById("badges").innerHTML=`<span class="badge">🎓 Perancang Muda</span><span class="badge">📚 Pakar PIPP</span><span class="badge">🚀 Penjelajah RPM</span>`}
+</script>
+</body>
+</html>
